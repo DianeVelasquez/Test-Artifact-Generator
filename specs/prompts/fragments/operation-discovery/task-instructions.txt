@@ -1,0 +1,61 @@
+## Task: Discover and Extract Operation Metadata
+
+Your task is to discover all operations in the service repository and extract complete metadata for each operation.
+
+### Important Rules:
+- **Normalization:** Before any other processing, normalize all discovered operation names to a consistent `camelCase` format. For example, `MyOperation`, `my-operation`, and `My_Operation` should all be treated as `myOperation`. Use this normalized name for cross-validation and for the `name` field in the final output.
+
+### Step-by-Step Process:
+
+1. **Scan WSDL Files** (if SOAP service):
+   - Locate all .wsdl files in the repository
+   - Extract all <wsdl:operation name="..."> elements
+   - Extract operation descriptions from <wsdl:documentation> elements
+   - Note the WSDL file path for traceability
+
+2. **Scan Message Folders**:
+   - Navigate to src/test/resources/messages/ directory
+   - List all subdirectories (each represents an operation)
+   - Verify presence of Success/ subdirectory
+   - Identify request.xml and response.xml files (or request_STI.xml, response_STI.xml)
+   - Record full paths to these files
+
+3. **Scan Feature Files**:
+   - Locate all .feature files in src/test/resources/features/ or equivalent
+   - Extract base filename (remove .feature extension)
+   - Parse feature file content to extract operation description
+   - Identify all scenarios within the feature file
+
+4. **Cross-Validate Operations**:
+   - Compare operation names from all three sources (WSDL, folders, features)
+   - ONLY include operations found in ALL THREE sources
+   - For operations found in only 1 or 2 sources, log a warning but EXCLUDE from final list
+   - Mark confirmed operations with validationSources.confirmed = true
+
+5. **Extract Detailed Metadata** (for each confirmed operation):
+   - name: The validated operation name
+   - description: From WSDL documentation or feature file header
+   - protocol: "SOAP" if WSDL exists, "REST" otherwise
+   - action: "" for SOAP, HTTP verb for REST (extract from annotations or API specs)
+   - relativePath: Operation name for SOAP, path for REST (e.g., /api/v1/resource)
+   - requestDataPath: Full path to request example file
+   - responseDataPath: Full path to response example file
+   - validationSources: Paths to WSDL, message folder, and feature file
+
+6. **Extract Associated BDD Scenarios** (for each operation):
+   - Parse the .feature file content for this operation
+   - Extract all scenarios (both Modular and Integration types)
+   - For each scenario, extract:
+     * scenery: Scenario name in camelCase
+     * request: Path to request message file
+     * description: Full scenario description
+     * given, when, then, and (optional): BDD clauses
+     * responseCode: HTTP status code from assertions
+     * responseStatus: Success/SystemException/BussinesException
+   - Separate scenarios into scenariosBddModular and scenariosBddIntegration arrays
+
+7. **Assemble Final Output**:
+   - Create array of operation objects
+   - Each operation must have all required fields populated
+   - Include validationSources for debugging and traceability
+   - Ensure data integrity and completeness

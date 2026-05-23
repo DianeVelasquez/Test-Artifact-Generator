@@ -1,0 +1,101 @@
+{
+  "sourceHints": {
+    "description": "Detalles de UNA SOLA operación, extraídos de controladores Spring Boot, OpenAPI, WSDL, carpetas de mensajes y archivos .feature.",
+    "fileExtensions": [
+      ".wsdl",
+      ".xml",
+      ".feature",
+      ".java",
+      ".yaml",
+      ".yml",
+      ".json"
+    ],
+    "directories": [
+      "src/test/resources/messages",
+      "src/test/resources/features",
+      "src/main/java",
+      "src/main/resources",
+      "WSDL",
+      "MsgSet"
+    ],
+    "patterns": [
+      "*.wsdl",
+      "*.feature",
+      "*Controller.java",
+      "*Resource.java",
+      "openapi*.yaml",
+      "swagger*.json",
+      "*StepDefinition*.java",
+      "*Steps.java"
+    ],
+    "priority": [
+      "repo"
+    ]
+  },
+  "data": {
+    "operationName": {
+      "type": "string",
+      "description": "Este es un PARÁMETRO DE ENTRADA que especifica el nombre de la operación a buscar. NO intentes extraer este valor; úsalo como filtro para los demás campos.",
+      "required": true
+    },
+    "description": {
+      "type": "string",
+      "description": "Descripción de la operación, extraída de <wsdl:documentation> o del comentario de cabecera del .feature correspondiente a la 'operationName' de entrada.",
+      "required": false
+    },
+    "action": {
+      "type": "string",
+      "description": "Verbo HTTP para la operación (si es REST) o 'SOAP'.",
+      "required": true,
+      "enum": ["SOAP", "GET", "POST", "PUT", "DELETE", "PATCH"]
+    },
+    "relativePath": {
+      "type": "string",
+      "description": "Para SOAP: el nombre de la operación. Para REST: el path relativo (ej: /api/v1/users).",
+      "required": true
+    },
+    "protocol": {
+      "type": "string",
+      "description": "Protocolo de comunicación (SOAP o REST).",
+      "required": true,
+      "enum": ["SOAP", "REST"]
+    },
+    "requestDataPath": {
+      "type": "string",
+      "description": "Ruta relativa al archivo de ejemplo de request para esta operación específica. Típicamente en 'messages/{operationName}/Success/request.xml'.",
+      "required": false
+    },
+    "responseDataPath": {
+      "type": "string",
+      "description": "Ruta relativa al archivo de ejemplo de response para esta operación específica. Típicamente en 'messages/{operationName}/Success/response.xml'.",
+      "required": false
+    },
+    "validationSources": {
+      "type": "object",
+      "description": "Fuentes que confirman la existencia de esta operación.",
+      "required": false,
+      "schema": {
+        "wsdlFile": {
+          "type": "string",
+          "description": "Ruta al WSDL que contiene esta operación.",
+          "required": false
+        },
+        "messageFolder": {
+          "type": "string",
+          "description": "Ruta a la carpeta de mensajes para esta operación.",
+          "required": false
+        },
+        "featureFile": {
+          "type": "string",
+          "description": "Ruta al archivo .feature para esta operación.",
+          "required": false
+        },
+        "controllerFile": {
+          "type": "string",
+          "description": "Ruta al controller Spring Boot que expone esta operación REST.",
+          "required": false
+        }
+      }
+    }
+  }
+}

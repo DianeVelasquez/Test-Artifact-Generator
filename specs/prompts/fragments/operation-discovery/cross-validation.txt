@@ -1,0 +1,98 @@
+## CRITICAL: Operation Discovery Cross-Validation
+
+You MUST discover operations by cross-validating THREE sources. This is mandatory and non-negotiable.
+
+### The Three Sources:
+
+**1. WSDL FILES** (for SOAP services):
+   - Search for files with .wsdl extension
+   - Parse XML to find <wsdl:operation name="operationName"> elements
+   - Extract the 'name' attribute value
+   - Extract descriptions from <wsdl:documentation> child elements
+   - Record the WSDL file path
+
+   Example:
+   ```xml
+   <wsdl:operation name="enviarAlertaYNotificacion">
+     <wsdl:documentation>Servicio para enviar alertas</wsdl:documentation>
+   </wsdl:operation>
+   ```
+
+**2. MESSAGE FOLDERS**:
+   - Navigate to src/test/resources/messages/
+   - List ALL subdirectories at this level
+   - Each subdirectory name IS an operation name
+   - Verify each folder contains Success/ subdirectory
+   - Check for request.xml and response.xml (or variations like request_STI.xml)
+   - Record full folder path
+
+   Example structure:
+   ```
+   src/test/resources/messages/
+   ├── enviarAlertaYNotificacion/
+   │   ├── Success/
+   │   │   ├── request.xml
+   │   │   └── response.xml
+   │   └── SystemException/
+   ├── consultarSaldo/
+   │   └── Success/
+   └── transferirFondos/
+       └── Success/
+   ```
+
+**3. FEATURE FILES**:
+   - Find all files with .feature extension
+   - Common locations: src/test/resources/features/, src/test/resources/, features/
+   - Extract base filename WITHOUT .feature extension
+   - The filename IS the operation name
+   - Parse feature file content for scenarios
+
+   Example:
+   - File: enviarAlertaYNotificacion.feature → Operation: enviarAlertaYNotificacion
+   - File: consultarSaldo.feature → Operation: consultarSaldo
+
+### Cross-Validation Rules:
+
+✅ **INCLUDE Operation** IF AND ONLY IF:
+   - Operation name appears in WSDL <wsdl:operation> (or REST equivalent)
+   - AND folder exists in messages/{operationName}/
+   - AND .feature file exists as {operationName}.feature
+   - All three names MUST match exactly (case-sensitive)
+
+⚠️ **EXCLUDE Operation** IF:
+   - Found in only 1 source (e.g., WSDL but no folder or feature)
+   - Found in only 2 sources (e.g., folder and feature but no WSDL)
+   - Names don't match exactly across sources
+
+   When excluding, log a warning with details:
+   "Operation 'operationName' found in [sources] but missing from [missing sources]. Excluded from final list."
+
+🎯 **For Each Validated Operation**:
+   - Set validationSources.wsdlFile to WSDL path (if SOAP)
+   - Set validationSources.messageFolder to folder path
+   - Set validationSources.featureFile to .feature file path
+   - Set validationSources.confirmed = true
+   - Populate all metadata fields from the sources
+
+### Example Validation Scenario:
+
+**Scenario A - VALID** (include this):
+- WSDL: <wsdl:operation name="enviarAlertaYNotificacion">
+- Folder: src/test/resources/messages/enviarAlertaYNotificacion/
+- Feature: src/test/resources/features/enviarAlertaYNotificacion.feature
+→ ✅ All three sources confirm, INCLUDE in output
+
+**Scenario B - INVALID** (exclude this):
+- WSDL: <wsdl:operation name="consultarSaldo">
+- Folder: src/test/resources/messages/consultarSaldo/
+- Feature: (none found)
+→ ❌ Missing feature file, EXCLUDE from output, log warning
+
+**Scenario C - INVALID** (exclude this):
+- WSDL: (none)
+- Folder: src/test/resources/messages/registrarUsuario/
+- Feature: src/test/resources/features/registrarUsuario.feature
+→ ❌ Missing WSDL operation, EXCLUDE from output, log warning
+
+### REST Services Note:
+For REST services without WSDL, adapt validation to use API specification files (OpenAPI, Swagger) as the first source instead of WSDL. The same 3-source validation principle applies.

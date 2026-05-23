@@ -1,0 +1,24 @@
+function fn() {
+  var env = karate.env; // get system property 'karate.env'
+  karate.log('karate.env system property was:', env);
+
+  if (!env) {
+    env = 'dev';
+  }
+
+  var config = {
+    serviceName: '{{serviceName}}',
+    technologyProfile: '{{technologyProfile}}',
+    baseUrl: '{{urlExposicionACE}}',
+    timeout: {{timeout}},
+    operations: [
+      {{#operations}}'{{.}}',{{/operations}}
+    ].filter(Boolean)
+  }
+
+  karate.log('Configuration loaded for environment:', env);
+  karate.log('Service:', config.serviceName);
+  karate.log('Base URL:', config.baseUrl);
+
+  return config;
+}

@@ -1,0 +1,48 @@
+{
+  "name": "Modernization Assessment Report",
+  "description": "Generates a first-pass modernization assessment report for a legacy microservice.",
+  "outputFileName": "modernization-assessment-{serviceName}.md",
+  "enabled": true,
+  "mapping": {
+    "serviceName": {
+      "path": "serviceName",
+      "default": "unknown-service"
+    },
+    "businessCapability": {
+      "path": "businessCapability",
+      "default": "Not enough evidence"
+    },
+    "currentArchitecture": {
+      "path": "currentArchitecture",
+      "default": "Unknown"
+    },
+    "technologyStack": {
+      "path": "technologyStack",
+      "default": []
+    },
+    "integrationPoints": {
+      "path": "integrationPoints",
+      "default": []
+    },
+    "deploymentSignals": {
+      "path": "deploymentSignals",
+      "default": []
+    },
+    "modernizationDrivers": {
+      "path": "modernizationDrivers",
+      "default": []
+    },
+    "risks": {
+      "path": "risks",
+      "default": []
+    },
+    "recommendedPath": {
+      "path": "recommendedPath",
+      "default": "Run deeper discovery before selecting a modernization path."
+    },
+    "nextActions": {
+      "path": "nextActions",
+      "default": []
+    }
+  }
+}

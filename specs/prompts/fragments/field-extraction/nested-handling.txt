@@ -1,0 +1,112 @@
+## HANDLING NESTED SCHEMAS
+
+Some fields have a "schema" property defining nested structure. These require special handling.
+
+### Recognizing Nested Fields
+
+```json
+"operations": {
+  "type": "object",
+  "description": "Service operations",
+  "schema": {
+    "operations": {
+      "type": "array",
+      "description": "List of operation names"
+    }
+  }
+}
+```
+
+This is a **nested schema** - it has a `"schema"` property containing sub-fields.
+
+### How to Extract Nested Fields
+
+1. **Extract values for ALL fields inside the nested schema**
+2. **Return an OBJECT** with all nested fields populated
+3. **DO NOT** return "[object Object]" as a string
+4. **DO NOT** skip nested fields
+
+### Example: Nested Object Extraction
+
+**Schema**:
+```json
+"request": {
+  "type": "object",
+  "schema": {
+    "type": {
+      "type": "array",
+      "description": "Response types expected"
+    },
+    "messageRequest": {
+      "type": "string",
+      "description": "SOAP request envelope"
+    }
+  }
+}
+```
+
+**Correct Response**:
+```json
+{
+  "fieldName": "request",
+  "value": {
+    "type": ["success", "businessException"],
+    "messageRequest": "<soapenv:Envelope>...</soapenv:Envelope>"
+  },
+  "source": "repository",
+  "confidence": "high",
+  "reasoning": "Extracted response types from error handling code and SOAP envelope from request template file"
+}
+```
+
+### Example: Array of Objects
+
+**Schema**:
+```json
+"scenariosBddModular": {
+  "type": "array",
+  "schema": {
+    "scenery": {
+      "type": "string",
+      "description": "Scenario name"
+    },
+    "given": {
+      "type": "string",
+      "description": "Given condition"
+    }
+  }
+}
+```
+
+**Correct Response**:
+```json
+{
+  "fieldName": "scenariosBddModular",
+  "value": [
+    {
+      "scenery": "SuccessfulPayment",
+      "given": "a valid payment request",
+      "when": "the payment is processed",
+      "then": "the payment is confirmed"
+    },
+    {
+      "scenery": "InvalidPayment",
+      "given": "an invalid payment request",
+      "when": "the payment is processed",
+      "then": "an error is returned"
+    }
+  ],
+  "source": "repository",
+  "confidence": "medium",
+  "reasoning": "Extracted test scenarios from Karate feature files in test directory"
+}
+```
+
+### Key Points for Nested Extraction
+
+✅ Return complete nested structures
+✅ Populate ALL required nested fields
+✅ Maintain proper data types (arrays stay arrays, objects stay objects)
+❌ Never return stringified objects like "[object Object]"
+❌ Never skip nested fields
+❌ Never flatten nested structures

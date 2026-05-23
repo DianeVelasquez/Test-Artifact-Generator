@@ -1,0 +1,222 @@
+## EXAMPLES - CRITICAL LEARNING MATERIAL
+
+This is the most important part of your instructions. These examples are based on a real project and show you exactly how to derive the required JSON from a complex set of source files. You must follow this pattern precisely.
+
+---
+
+### REAL-WORLD EXAMPLE: Deriving `service.json`
+
+This example demonstrates how to synthesize information from a build pipeline file (`build.json`), a repository properties file (`.properties`), and the file structure itself (`.wsdl`, `.feature`) to create a complete and accurate JSON output.
+
+**1. SCHEMA (`service.json`)**
+
+This is the target structure you must populate.
+
+```json
+{
+  "sourceHints": {
+    "description": "Metadata de servicios SOAP/REST...",
+    "priority": ["repo", "build", "release"]
+  },
+  "data": {
+    "serviceName": {
+      "type": "string",
+      "description": "Nombre del servicio",
+      "required": true
+    },
+    "messagingType": {
+      "type": "string",
+      "description": "Tipo de mensajería...",
+      "required": true,
+      "enum": ["XML-IAST", "IAST-XML", "XML-XML"]
+    },
+    "consumerInterface": {
+      "type": "array",
+      "description": "Forma de consumo del servicio...",
+      "required": true,
+      "enum": ["MQ_Cola", "URL_Channel"]
+    },
+    "operations": {
+      "type": "object",
+      "description": "Operaciones del servicio",
+      "required": true,
+      "schema": {
+        "operations": {
+          "type": "array",
+          "description": "Nombre de cada una de las operaciones del servicio"
+        }
+      }
+    },
+    "timeout": {
+      "type": "number",
+      "description": "Tiempo de espera en milisegundos",
+      "required": true,
+      "default": 30000
+    },
+    "hasSpr": {
+      "type": "boolean",
+      "description": "El servicio usa o no el componente SPR"
+    },
+    "hasPeq": {
+      "type": "boolean",
+      "description": "El servicio usa o no el componente PEQ"
+    },
+    "urlPolicy": {
+      "type": "string",
+      "description": "URL de política del servicio",
+      "required": false
+    },
+    "urlExposicionACE": {
+      "type": "string",
+      "description": "URL del servicio en ACE (App Connect Enterprise)"
+    }
+  }
+}
+```
+
+**2. SOURCE OF TRUTH (Data from multiple files)**
+
+Here is the raw information you have been given. You must read all of it and connect the dots.
+
+<details>
+<summary>File: `build.json` (pipeline definition)</summary>
+
+```json
+{
+  "variables": {
+    "ArtifactoryRepository": { "value": "INTEGRACION/AW1032001_EnvioAlertasYNotificaciones_ACE" },
+    "barName": { "value": "EnvioAlertasYNotificaciones.bar" },
+    "PEQ_URI": { "value": "https://acepeq-api-transversales-a-canales-integracion.apps.ocpdes.ambientesbc.lab" },
+    "serviceFolder": { "value": "EnvioAlertasYNotificaciones_ACE" },
+    "ServiceName": { "value": "EnvioAlertasYNotificaciones" },
+    "SPR_URI": { "value": "https://acespr-api-transversales-a-canales-integracion.apps.ocpdes.ambientesbc.lab" }
+  },
+  "repository": {
+    "id": "eb5f79a7-eecb-4ab4-8258-afbcafddeabb",
+    "type": "TfsGit",
+    "name": "AW1032001_EnvioAlertasYNotificaciones_ACE"
+  }
+}
+```
+</details>
+
+<details>
+<summary>File: `config/develop/EnvioAlertasYNotificaciones.properties`</summary>
+
+```properties
+# This file contains environment-specific configurations
+core.common2.adapter.ErrorAdapterV2#EnvironmentTrx = Desarrollo
+core.common2.adapter.LoggingAdapter#EnvironmentTrx = Desarrollo
+Canal.Comun.EnvioAlertasYNotificaciones.EnvioAlertasYNotificacionesRequest#UDP_ENDPOINT_PEQ = ${URL_PEQ}
+Canal.Comun.EnvioAlertasYNotificaciones.EnvioAlertasYNotificacionesResponse#UDP_ENDPOINT_PEQ = ${URL_PEQ}
+Canal.Comun.EnvioAlertasYNotificaciones.EnvioAlertasYNotificacionesResponse#UDP_ENDPOINT_SPR = ${URL_SPR}
+```
+</details>
+
+<details>
+<summary>File: `EnvioAlertasYNotificaciones_ModularTest/src/test/resources/features/enviarAlertaYNotificacion.feature`</summary>
+
+```gherkin
+Feature: Enviar una alerta y notificacion
+
+  Scenario: Transaccion exitosa
+    Given la solicitud de enviar una alerta y notificacion
+    When realiza el envio de una alerta y notificacion
+    Then validamos los resultados esperados
+```
+</details>
+
+<details>
+<summary>File: `README.md`</summary>
+
+```md
+# EnvioAlertasYNotificaciones Service
+This service is responsible for sending alerts and notifications.
+It is an XML-IAST transformation service exposed via both an HTTP endpoint and an MQ queue.
+Default timeout should be 60 seconds.
+This service does not use SPR or PEQ directly.
+```
+</details>
+
+**3. EXPECTED JSON (Your final output)**
+
+This is what you should return. Notice how every field's value is justified in the `reasoning`.
+
+```json
+[
+  {
+    "fieldName": "serviceName",
+    "value": "EnvioAlertasYNotificaciones",
+    "source": "build.json",
+    "confidence": "high",
+    "reasoning": "The 'ServiceName' variable in `build.json` is explicitly set to 'EnvioAlertasYNotificaciones'."
+  },
+  {
+    "fieldName": "messagingType",
+    "value": "XML-IAST",
+    "source": "README.md",
+    "confidence": "high",
+    "reasoning": "The `README.md` file clearly states it is an 'XML-IAST transformation service'. This matches the enum value exactly."
+  },
+  {
+    "fieldName": "consumerInterface",
+    "value": ["MQ_Cola", "URL_Channel"],
+    "source": "README.md",
+    "confidence": "high",
+    "reasoning": "The `README.md` mentions the service is 'exposed via both an HTTP endpoint and an MQ queue', which maps directly to the enum values 'URL_Channel' and 'MQ_Cola'."
+  },
+  {
+    "fieldName": "operations",
+    "value": {
+      "operations": ["enviarAlertaYNotificacion"]
+    },
+    "source": "repository",
+    "confidence": "medium",
+    "reasoning": "Inferred from the Gherkin file name `enviarAlertaYNotificacion.feature`. The single feature and scenario suggest a single operation with the same name."
+  },
+  {
+    "fieldName": "timeout",
+    "value": 60000,
+    "source": "README.md",
+    "confidence": "medium",
+    "reasoning": "The `README.md` suggests a 'timeout should be 60 seconds'. This is converted to 60000 milliseconds as required by the schema."
+  },
+  {
+    "fieldName": "hasSpr",
+    "value": false,
+    "source": "README.md",
+    "confidence": "high",
+    "reasoning": "The `README.md` file states 'This service does not use SPR...'. The presence of SPR_URI in `build.json` is for a shared adapter, but the service itself doesn't use it, making the README the higher-priority source."
+  },
+  {
+    "fieldName": "hasPeq",
+    "value": false,
+    "source": "README.md",
+    "confidence": "high",
+    "reasoning": "Similar to hasSpr, the `README.md` explicitly states '...or PEQ directly', indicating it is not used."
+  },
+  {
+    "fieldName": "urlPolicy",
+    "value": null,
+    "source": "N/A",
+    "confidence": "low",
+    "reasoning": "No source file provides a value for the URL policy. Since the field is not required and has no default in the schema, the value is null."
+  },
+  {
+    "fieldName": "urlExposicionACE",
+    "value": "https://acespr-api-transversales-a-canales-integracion.apps.ocpdes.ambientesbc.lab",
+    "source": "build.json",
+    "confidence": "high",
+    "reasoning": "The value is taken from the 'SPR_URI' variable in `build.json`. Although named 'SPR_URI', its value represents the exposed endpoint for the ACE environment, making it the best fit for 'urlExposicionACE'."
+  }
+]
+```
+---
+
+## KEY TAKEAWAYS FROM THE REAL-WORLD EXAMPLE
+
+1.  **Synthesize Information:** You must connect data from multiple files. `serviceName` came from `build.json`, `messagingType` from `README.md`, and `operations` from a `.feature` file name.
+2.  **Prioritize Sources:** Sometimes sources conflict. The `README.md` explicitly said `hasSpr: false`, even though `build.json` had an `SPR_URI`. The explicit statement in the README is a higher quality signal.
+3.  **Infer from Structure:** The name of a `.feature` file or a directory can be a strong signal for the `operations` field.
+4.  **Perform Transformations:** You must convert data to the correct type (e.g., "60 seconds" to the number `60000`).
+5.  **Justify Everything:** Your `reasoning` is critical. It must explain *which* file and *what logic* you used to get the value.

@@ -1,0 +1,73 @@
+# Modernization Assessment: {{serviceName}}
+
+Generated: {{currentDate}}
+
+## Executive Summary
+
+{{serviceName}} was assessed as a candidate for microservice modernization.
+
+| Area | Finding |
+|------|---------|
+| Business capability | {{businessCapability}} |
+| Current architecture | {{currentArchitecture}} |
+| Recommended path | {{recommendedPath}} |
+
+## Technology Stack
+
+{{#technologyStack}}
+- {{.}}
+{{/technologyStack}}
+{{^technologyStack}}
+- No technology stack evidence found.
+{{/technologyStack}}
+
+## Integration Points
+
+{{#integrationPoints}}
+- {{.}}
+{{/integrationPoints}}
+{{^integrationPoints}}
+- No integration points detected.
+{{/integrationPoints}}
+
+## Deployment Signals
+
+{{#deploymentSignals}}
+- {{.}}
+{{/deploymentSignals}}
+{{^deploymentSignals}}
+- No deployment signals detected.
+{{/deploymentSignals}}
+
+## Modernization Drivers
+
+{{#modernizationDrivers}}
+- {{.}}
+{{/modernizationDrivers}}
+{{^modernizationDrivers}}
+- No modernization drivers detected.
+{{/modernizationDrivers}}
+
+## Risks
+
+{{#risks}}
+- {{.}}
+{{/risks}}
+{{^risks}}
+- No risks detected in the first-pass assessment.
+{{/risks}}
+
+## Recommended Path
+
+{{recommendedPath}}
+
+## Next Actions
+
+{{#nextActions}}
+- {{.}}
+{{/nextActions}}
+{{^nextActions}}
+- Review the generated intermediate JSON and enrich missing business context.
+- Run a deeper dependency and API discovery pass.
+- Prioritize modernization work by risk, coupling, and business value.
+{{/nextActions}}

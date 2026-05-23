@@ -1,0 +1,201 @@
+{
+  "sourceHints": {
+    "description": "Escenarios BDD (Behavior Driven Development) - archivos .feature y step definitions en Java",
+    "fileExtensions": [
+      ".feature",
+      ".java"
+    ],
+    "directories": [
+      "src/test/resources",
+      "src/test/java",
+      "test/resources/features",
+      "test/java/stepdefinitions",
+      "features",
+      "stepdefinitions"
+    ],
+    "patterns": [
+      "*.feature",
+      "*StepDefinition*.java",
+      "*Steps.java"
+    ],
+    "priority": [
+      "repo"
+    ]
+  },
+  "data": {
+    "operationName": {
+      "type": "string",
+      "description": "Nombre de la operación a la que pertenecen estos escenarios BDD",
+      "required": true,
+      "examples": ["enviarAlertaYNotificacion", "consultarCliente"]
+    },
+    "scenariosBddModular": {
+      "type": "array",
+      "description": "Escenarios BDD contenidos en archivos con extension *.feature* y artefactos de pruebas stepdefinitions con extension *.java* referentes a test modulares **(Modular Test)**, pueden ser varios escenarios, por eso una lista, de objetos del schema dado en este json.",
+      "required": true,
+      "schema": {
+        "scenery": {
+          "type": "string",
+          "description": "Nombre del escneario encontrado en camelCase",
+          "required": true,
+          "examples": [
+            "transaccionExitosa",
+            "clienteNoExiste",
+            "sinTasasNegociadas",
+            "SucessEnviarAlertaYNotificacion",
+            "SystemExceptionEnviarAlertaYNotificacion"
+          ]
+        },
+        "request": {
+          "type": "string",
+          "description": "ruta al archivo de mensaje que usa el artefacto de test relacionado al escenario BDD hallado.",
+          "required": true,
+          "examples": [
+            "messages/enviarAlertaYNotificacion/Success/requestSuccess.xml",
+            "messages/enviarAlertaYNotificacion/Success/requestException.xml"
+          ]
+        },
+        "description": {
+          "type": "string",
+          "description": "El escenario completamente sin parsear",
+          "required": true,
+          "examples": [
+            "DADO la solicitud de enviar una alerta y notificacion Cuando realiza el envio de una alerta y notificacion Entonces validamos los resultados esperados",
+            "DADO la solicitud de enviar una alerta y notificacion con datos incorrectos CUANDO realiza el envio de una alerta y notificacion con datos incorrectos ENTONCES validamos que la respuesta sea el error esperado"
+          ]
+        },
+        "given": {
+          "type": "string",
+          "description": "frase de la parte _Dado_ de los escenarios BDD parametrizados en el archivos de stepdefinitions (.java) de pruebas",
+          "required": true,
+          "examples": [
+            "la solicitud de enviar una alerta y notificacion"
+          ]
+        },
+        "and": {
+          "type": "string",
+          "description": "condicion añadida a los escenarios BDD parametrizados en el archivos de stepdefinitions (.java) de pruebas. No todos tienen este campo",
+          "required": false,
+          "examples": [
+            "el cliente esta autorizado"
+          ]
+        },
+        "when": {
+          "type": "string",
+          "description": "frase de la parte _Cuando_ de los escenarios BDD parametrizados en el archivos de stepdefinitions (.java) de pruebas",
+          "required": true,
+          "examples": [
+            "realiza el envio de una alerta y notificacion con datos incorrectos"
+          ]
+        },
+        "then": {
+          "type": "string",
+          "description": "frase de la parte _Entonces_ de los escenarios BDD parametrizados en el archivos de stepdefinitions (.java) de pruebas",
+          "required": true,
+          "examples": [
+            "validamos que la respuesta sea el error esperado"
+          ]
+        },
+        "responseCode": {
+          "type": "number",
+          "description": "Codigo de estado http de respuesta encontrado en el archivos de stepdefinitions en la respuesta del escenario, casi siempre como HttpStatus.xxxx",
+          "required": true
+        },
+        "responseStatus": {
+          "type": "string",
+          "description": "Respuesta de control encontrada en el archivos de stepdefinitions en la respuesta del escenario, puedes tomarla tambien de la ruta del mensaje",
+          "required": true,
+          "examples": [
+            "Success",
+            "SystemException",
+            "BussinesException"
+          ]
+        }
+      }
+    },
+    "scenariosBddIntegration": {
+      "type": "array",
+      "description": "Escenarios BDD contenidos en archivos con extension *.feature* y artefactos de pruebas stepdefinitions con extension *.java* referentes a test integrales **(ServiceTesting)**, pueden ser varios escenarios, por eso una lista, de objetos del schema dado en este json.",
+      "required": true,
+      "schema": {
+        "scenery": {
+          "type": "string",
+          "description": "Nombre del escneario encontrado en camelCase",
+          "required": true,
+          "examples": [
+            "transaccionExitosa",
+            "clienteNoExiste",
+            "sinTasasNegociadas",
+            "SucessEnviarAlertaYNotificacion",
+            "SystemExceptionEnviarAlertaYNotificacion"
+          ]
+        },
+        "request": {
+          "type": "string",
+          "description": "ruta al archivo de mensaje que usa el artefacto de test relacionado al escenario BDD hallado.",
+          "required": true,
+          "examples": [
+            "messages/enviarAlertaYNotificacion/Success/requestSuccess.xml",
+            "messages/enviarAlertaYNotificacion/Success/requestException.xml"
+          ]
+        },
+        "description": {
+          "type": "string",
+          "description": "El escenario completamente sin parsear",
+          "required": true,
+          "examples": [
+            "DADO la solicitud de enviar una alerta y notificacion Cuando realiza el envio de una alerta y notificacion Entonces validamos los resultados esperados",
+            "DADO la solicitud de enviar una alerta y notificacion con datos incorrectos CUANDO realiza el envio de una alerta y notificacion con datos incorrectos ENTONCES validamos que la respuesta sea el error esperado"
+          ]
+        },
+        "given": {
+          "type": "string",
+          "description": "frase de la parte _Dado_ de los escenarios BDD parametrizados en el archivos de stepdefinitions (.java) de pruebas",
+          "required": true,
+          "examples": [
+            "la solicitud de enviar una alerta y notificacion"
+          ]
+        },
+        "and": {
+          "type": "string",
+          "description": "condicion añadida a los escenarios BDD parametrizados en el archivos de stepdefinitions (.java) de pruebas",
+          "required": false,
+          "examples": [
+            "el cliente esta autorizado"
+          ]
+        },
+        "when": {
+          "type": "string",
+          "description": "frase de la parte _Cuando_ de los escenarios BDD parametrizados en el archivos de stepdefinitions (.java) de pruebas",
+          "required": true,
+          "examples": [
+            "realiza el envio de una alerta y notificacion con datos incorrectos"
+          ]
+        },
+        "then": {
+          "type": "string",
+          "description": "frase de la parte _Entonces_ de los escenarios BDD parametrizados en el archivos de stepdefinitions (.java) de pruebas",
+          "required": true,
+          "examples": [
+            "validamos que la respuesta sea el error esperado"
+          ]
+        },
+        "responseCode": {
+          "type": "number",
+          "description": "Codigo de estado http de respuesta encontrado en el archivos de stepdefinitions en la respuesta del escenario, casi siempre como HttpStatus.xxxx",
+          "required": true
+        },
+        "responseStatus": {
+          "type": "string",
+          "description": "Respuesta de control encontrada en el archivos de stepdefinitions en la respuesta del escenario, puedes tomarla tambien de la ruta del mensaje",
+          "required": true,
+          "examples": [
+            "Success",
+            "SystemException",
+            "BussinesException"
+          ]
+        }
+      }
+    }
+  }
+}
