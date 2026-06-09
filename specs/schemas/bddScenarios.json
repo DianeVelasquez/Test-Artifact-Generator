@@ -8,6 +8,8 @@
     "directories": [
       "src/test/resources",
       "src/test/java",
+      "src/main/java",
+      "src/main/resources",
       "test/resources/features",
       "test/java/stepdefinitions",
       "features",
@@ -15,6 +17,8 @@
     ],
     "patterns": [
       "*.feature",
+      "*Controller.java",
+      "*Resource.java",
       "*StepDefinition*.java",
       "*Steps.java"
     ],

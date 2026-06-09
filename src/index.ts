@@ -19,8 +19,11 @@ async function main() {
     // Usar siempre el Master Orchestrator
     console.log("🧠 Using Master Orchestrator Agent...\n");
 
+    const configPath = process.env.FLOW_CONFIG_PATH || FLOW_CONFIG_PATH;
+    console.log(`Configuration: ${configPath}\n`);
+
     const masterOrchestrator = new MasterOrchestratorAgent(llm, {
-      configPath: FLOW_CONFIG_PATH,
+      configPath,
       enableIntelligentValidation: true,
     });
 

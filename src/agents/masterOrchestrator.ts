@@ -350,9 +350,6 @@ export class MasterOrchestratorAgent {
           metricsCollector.increment("totalFilesRead", result.stats.filesRead);
           metricsCollector.increment("totalFieldsExtracted", result.stats.fieldsExtracted);
           metricsCollector.increment("totalArtifactsGenerated", result.stats.artifactsGenerated);
-          // Estimate LLM usage
-          metricsCollector.increment("totalLLMCalls", 1);
-          metricsCollector.increment("totalLLMTokens", result.stats.fieldsExtracted * 100);
         }
       }
 

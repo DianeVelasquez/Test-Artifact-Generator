@@ -124,6 +124,10 @@ export class AnalyzerAgent {
       reasoning: technologyProfile.signals.join('; ') || 'No strong technology-specific signals found.',
     });
 
+    if (technologyProfile.profile === 'spring-boot-rest') {
+      extractedFields.push(...this.extractSpringBootServiceDefaults(sourceData, repoFileSources));
+    }
+
     const opsResult = await this.operationNameDiscovery.run({
       repoFiles: repoFileSources,
     });
@@ -141,7 +145,7 @@ export class AnalyzerAgent {
     });
 
     const { operations, ...schemaForExtractor } = sourceData.schema.data;
-    if (Object.keys(schemaForExtractor).length > 0) {
+    if (Object.keys(schemaForExtractor).length > 0 && !this.hasRequiredServiceMetadata(extractedFields)) {
       console.log("[AnalyzerAgent] Extracting remaining simple fields for serviceMetadata...");
       const fieldResult = await this.fieldExtractor.run({
         schema: schemaForExtractor, sources: combinedSources, flowDefinition,
@@ -150,6 +154,59 @@ export class AnalyzerAgent {
       extractedFields.push(...fieldResult.extractedFields);
     }
     return this.deDuplicateFields(extractedFields);
+  }
+
+  private extractSpringBootServiceDefaults(sourceData: SourceData, repoFileSources: FieldExtractionSource[]): ExtractedField[] {
+    const serviceName = this.findSpringApplicationName(repoFileSources)
+      || this.findPomArtifactId(repoFileSources)
+      || sourceData.build?.repository
+      || sourceData.build?.name
+      || 'spring-boot-service';
+    const timeout = Number(sourceData.release?.timeout || 30000);
+    const baseUrl = sourceData.release?.baseUrl || sourceData.release?.url || 'http://localhost:8080';
+
+    return [
+      { fieldName: 'serviceName', value: serviceName, source: 'spring boot metadata', confidence: 'high', reasoning: 'Derived from Spring application metadata, pom.xml, or build metadata.' },
+      { fieldName: 'messagingType', value: 'REST-JSON', source: 'technology profile', confidence: 'high', reasoning: 'Spring Boot REST services expose HTTP/JSON APIs by default in this profile.' },
+      { fieldName: 'consumerInterface', value: ['URL_Channel'], source: 'technology profile', confidence: 'high', reasoning: 'Spring Boot REST services are consumed over HTTP URLs.' },
+      { fieldName: 'timeout', value: timeout, source: 'release metadata', confidence: 'medium', reasoning: 'Derived from release metadata or defaulted for generated Karate config.' },
+      { fieldName: 'hasSpr', value: false, source: 'technology profile', confidence: 'medium', reasoning: 'SPR is a legacy integration concern and is not detected in Spring Boot REST metadata.' },
+      { fieldName: 'hasPeq', value: false, source: 'technology profile', confidence: 'medium', reasoning: 'PEQ is a legacy integration concern and is not detected in Spring Boot REST metadata.' },
+      { fieldName: 'urlExposicionACE', value: baseUrl, source: 'release metadata', confidence: 'medium', reasoning: 'Reused as the generated Karate baseUrl for REST services.' },
+    ];
+  }
+
+  private hasRequiredServiceMetadata(fields: ExtractedField[]): boolean {
+    const requiredFields = ['serviceName', 'technologyProfile', 'messagingType', 'consumerInterface', 'operations', 'timeout', 'hasSpr', 'hasPeq', 'urlExposicionACE'];
+    const fieldNames = new Set(fields.filter((field) => field.value !== null && field.value !== undefined && field.value !== '').map((field) => field.fieldName));
+    return requiredFields.every((fieldName) => fieldNames.has(fieldName));
+  }
+
+  private findSpringApplicationName(repoFileSources: FieldExtractionSource[]): string | undefined {
+    for (const source of repoFileSources) {
+      const path = source.description || source.name;
+      if (!/application\.(yml|yaml|properties)$/.test(path)) {
+        continue;
+      }
+
+      const content = String(source.data || '');
+      const propertiesMatch = content.match(/^spring\.application\.name\s*=\s*(.+)$/m);
+      if (propertiesMatch?.[1]) {
+        return propertiesMatch[1].trim();
+      }
+
+      const yamlMatch = content.match(/application:\s*\n\s+name:\s*([^\n]+)/);
+      if (yamlMatch?.[1]) {
+        return yamlMatch[1].trim().replace(/["']/g, '');
+      }
+    }
+    return undefined;
+  }
+
+  private findPomArtifactId(repoFileSources: FieldExtractionSource[]): string | undefined {
+    const pom = repoFileSources.find((source) => (source.description || source.name).endsWith('pom.xml'));
+    const match = String(pom?.data || '').match(/<artifactId>([^<]+)<\/artifactId>/);
+    return match?.[1]?.trim();
   }
 
   private async analyzeGenericFlow(sourceData: SourceData, flowDefinition: ResolvedFlowDefinition, combinedSources: FieldExtractionSource[]): Promise<ExtractedField[]> {

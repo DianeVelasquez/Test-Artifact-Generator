@@ -1,0 +1,8 @@
+{
+  "name": "customer-service-ci",
+  "repository": "customer-service",
+  "branch": "main",
+  "language": "java",
+  "buildTool": "maven",
+  "runtime": "java-17"
+}

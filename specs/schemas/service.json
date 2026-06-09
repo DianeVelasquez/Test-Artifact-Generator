@@ -62,15 +62,18 @@
       "enum": [
         "XML-IAST",
         "IAST-XML",
-        "XML-XML"
+        "XML-XML",
+        "REST-JSON"
       ],
       "enumDescriptions": {
         "XML-IAST": "Transformación de formato XML a IAST",
         "IAST-XML": "Transformación de formato IAST a XML",
-        "XML-XML": "Sin transformación, formato XML puro"
+        "XML-XML": "Sin transformación, formato XML puro",
+        "REST-JSON": "Servicio REST con payloads JSON"
       },
       "examples": [
-        "XML-IAST"
+        "XML-IAST",
+        "REST-JSON"
       ]
     },
     "consumerInterface": {

@@ -60,15 +60,6 @@ export class WriterAgent {
       `[Building] Assembling ${fieldValues.length} fields into JSON structure...`,
     );
 
-    // DEBUG: Log extracted field names to diagnose empty operations.json
-    console.log("[DEBUG] Extracted fields:");
-    fieldValues.forEach((fv, idx) => {
-      const valuePreview = typeof fv.value === "object"
-        ? JSON.stringify(fv.value).substring(0, 100) + "..."
-        : String(fv.value).substring(0, 100);
-      console.log(`  [${idx + 1}] ${fv.fieldName}: ${valuePreview}`);
-    });
-
     // Build and write the JSON
     const result = await this.jsonBuilder.run({
       schema,

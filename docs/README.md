@@ -9,6 +9,12 @@ Test-Artifact-Generator uses a configurable multi-agent pipeline to inspect serv
 3. Run `npm run dev`.
 4. Review generated JSON under `output/intermediate-data/` and artifacts under `output/artifacts/`.
 
+For the bundled Spring Boot demo fixture:
+
+```bash
+FLOW_CONFIG_PATH=specs/flow-configuration.spring-example.json npm run dev
+```
+
 ## Execution Model
 
 ```text

@@ -380,7 +380,7 @@ export class ReportBuilder {
     output += "📈 METRICS\n";
     output += `  • Total flows: ${report.metrics.totalFlows}\n`;
     output += `  • LLM calls: ${report.metrics.totalLLMCalls}\n`;
-    output += `  • LLM tokens: ~${report.metrics.totalLLMTokens.toLocaleString()}\n`;
+    output += `  • LLM tokens: ${report.metrics.totalLLMTokens.toLocaleString()}\n`;
     output += `  • Files read: ${report.metrics.totalFilesRead}\n`;
     output += `  • Fields extracted: ${report.metrics.totalFieldsExtracted}\n`;
     output += `  • Artifacts generated: ${report.metrics.totalArtifactsGenerated}\n\n`;

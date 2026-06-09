@@ -1,6 +1,7 @@
 import type { ChatLLM } from "../config/llm.js";
 import type { FieldExtractionSource } from "./fieldExtractor.js";
 import type { ResolvedFlowDefinition } from "../types/index.js";
+import { SpringBootEndpointExtractorTool } from "./springBootEndpointExtractor.js";
 
 // The structure of the data this tool is expected to extract
 export interface BddExtractionData {
@@ -29,7 +30,47 @@ export class BddScenarioExtractorTool {
   name = "BddScenarioExtractor";
   description = "Extracts BDD scenarios from .feature and .java files for a single operation.";
 
+  private springBootEndpointExtractor = new SpringBootEndpointExtractorTool();
+
   constructor(private llm: ChatLLM) {}
+
+  private buildRestFallbackScenarios(operationName: string, repoFiles: FieldExtractionSource[]): BddExtractionData | null {
+    const endpoint = this.springBootEndpointExtractor
+      .extract(repoFiles)
+      .find((candidate) => candidate.operationName === operationName);
+
+    if (!endpoint) {
+      return null;
+    }
+
+    const request = `${endpoint.httpMethod} ${endpoint.path}`;
+    const successScenario = {
+      scenery: `${operationName}Success`,
+      request,
+      description: `Given a valid request for ${request} when the service is invoked then the API returns a successful response.`,
+      given: `a valid request for ${request}`,
+      when: `the client invokes ${request}`,
+      then: "the API returns a successful response",
+      responseCode: endpoint.httpMethod === "POST" ? 201 : 200,
+      responseStatus: "Success",
+    };
+
+    const validationScenario = {
+      scenery: `${operationName}InvalidRequest`,
+      request,
+      description: `Given an invalid request for ${request} when the service is invoked then the API returns a validation error.`,
+      given: `an invalid request for ${request}`,
+      when: `the client invokes ${request}`,
+      then: "the API returns a validation error",
+      responseCode: 400,
+      responseStatus: "BusinessException",
+    };
+
+    return {
+      scenariosBddModular: [successScenario, validationScenario],
+      scenariosBddIntegration: [successScenario],
+    };
+  }
 
   private buildPrompt(
     repoFiles: FieldExtractionSource[],
@@ -125,6 +166,15 @@ Your response MUST be a single, valid JSON object that matches the TARGET SCHEMA
     }
 
     try {
+      const fallbackData = this.buildRestFallbackScenarios(operationName, repoFiles);
+      if (fallbackData) {
+        return {
+          success: true,
+          data: fallbackData,
+          rawResponse: JSON.stringify(fallbackData),
+        };
+      }
+
       const prompt = this.buildPrompt(repoFiles, schema, operationName);
       
       const rawResponse = await this.llm.complete(prompt, {

@@ -19,7 +19,8 @@ The current codebase keeps the reusable multi-agent engine while moving product 
 - Reads configured sources from `resources/build.json`, `resources/release.json`, and `resources/repo`.
 - Uses `sourceHints` to focus repository discovery on relevant files.
 - Detects a technology profile such as `spring-boot-rest`, `soap-ace-legacy`, or `generic-api`.
-- Extracts service metadata, operations, and BDD scenario candidates with a configurable LLM provider.
+- Extracts Spring Boot REST operations deterministically from controller annotations before using an LLM fallback.
+- Extracts service metadata and BDD scenario candidates with a configurable LLM provider when deterministic evidence is incomplete.
 - Writes intermediate JSON files for auditability.
 - Generates Karate config, `.feature`, and critical-route artifacts.
 
@@ -125,6 +126,27 @@ Run the assistant:
 ```bash
 npm run dev
 ```
+
+## Spring Boot Portfolio Demo
+
+The repository includes a small tracked Spring Boot REST fixture under `examples/spring-boot-rest`.
+
+Run the same product pipeline against that fixture with:
+
+```bash
+FLOW_CONFIG_PATH=specs/flow-configuration.spring-example.json npm run dev
+```
+
+Expected evidence:
+
+| Input Signal | Product Behavior |
+|--------------|------------------|
+| `pom.xml` with Spring Boot parent | Detects `spring-boot-rest`. |
+| `@RestController` and mapping annotations | Extracts operations without an LLM call for operation names. |
+| `@PostMapping` and `@GetMapping` methods | Produces REST `action`, `relativePath`, `protocol`, and controller evidence. |
+| No existing `.feature` files | Generates starter BDD scenarios from REST endpoint metadata. |
+
+Generated outputs are written under `output/`, which is intentionally ignored by git.
 
 ## QA Artifact Fields
 
