@@ -1,0 +1,96 @@
+## Output Format: Operations Array
+
+You MUST return a JSON array of operation objects. Each object must conform to the schema provided.
+
+### Expected Structure:
+
+```json
+[
+  {
+    "fieldName": "operations",
+    "value": [
+      {
+        "name": "enviarAlertaYNotificacion",
+        "description": "Servicio para enviar alertas y notificaciones a clientes",
+        "action": "SOAP",
+        "relativePath": "/enviarAlertaYNotificacion",
+        "protocol": "SOAP",
+        "requestDataPath": "src/test/resources/messages/enviarAlertaYNotificacion/Success/request.xml",
+        "responseDataPath": "src/test/resources/messages/enviarAlertaYNotificacion/Success/response.xml",
+        "associatedBDDs": {
+          "scenariosBddModular": [
+            {
+              "scenery": "transaccionExitosa",
+              "request": "messages/enviarAlertaYNotificacion/Success/requestSuccess.xml",
+              "description": "DADO la solicitud de enviar una alerta...",
+              "given": "la solicitud de enviar una alerta y notificacion",
+              "and": "el cliente esta autorizado",
+              "when": "realiza el envio de una alerta y notificacion",
+              "then": "validamos los resultados esperados",
+              "responseCode": 200,
+              "responseStatus": "Success"
+            }
+          ],
+          "scenariosBddIntegration": [
+            {
+              "scenery": "integracionCompleta",
+              "request": "messages/enviarAlertaYNotificacion/Success/requestSuccess.xml",
+              "description": "Prueba de integración completa...",
+              "given": "el sistema esta configurado correctamente",
+              "when": "se ejecuta el flujo completo",
+              "then": "el resultado es exitoso",
+              "responseCode": 200,
+              "responseStatus": "Success"
+            }
+          ]
+        },
+        "validationSources": {
+          "wsdlFile": "WSDL/EnvioAlertasYNotificaciones.wsdl",
+          "messageFolder": "src/test/resources/messages/enviarAlertaYNotificacion",
+          "featureFile": "src/test/resources/features/enviarAlertaYNotificacion.feature",
+          "confirmed": true
+        }
+      }
+    ],
+    "confidence": "high",
+    "source": "Cross-validation of WSDL, message folders, and feature files",
+    "reasoning": "Operation 'enviarAlertaYNotificacion' confirmed in all three sources with matching names"
+  }
+]
+```
+
+### Field Requirements:
+
+**fieldName**: MUST be "operations" (exact match)
+
+**value**: Array of operation objects, each containing:
+- **name** (string, required): Validated operation name
+- **description** (string, optional): Operation description
+- **action** (string, required): "" for SOAP, HTTP verb for REST
+- **relativePath** (string, required): Operation name or REST path
+- **protocol** (string, required): "SOAP" or "REST"
+- **requestDataPath** (string, required): Path to request example file
+- **responseDataPath** (string, required): Path to response example file
+- **associatedBDDs** (object, required):
+  - **scenariosBddModular** (array, required): Modular test scenarios
+  - **scenariosBddIntegration** (array, required): Integration test scenarios
+- **validationSources** (object, required):
+  - **wsdlFile** (string, optional): WSDL file path
+  - **messageFolder** (string, optional): Message folder path
+  - **featureFile** (string, optional): Feature file path
+  - **confirmed** (boolean, required): true if all 3 sources match
+
+**confidence**: "high" if all operations validated, "medium" if warnings present, "low" if issues detected
+
+**source**: Description of data sources used
+
+**reasoning**: Explanation of validation process and results
+
+### Important Notes:
+
+1. Return ONLY operations that pass 3-source validation
+2. Empty arrays are acceptable if no valid operations found
+3. All required fields must be populated
+4. Paths must be accurate and relative to repository root
+5. BDD scenarios must be filtered by operation (not all scenarios)
+6. Maintain data integrity - don't fabricate missing data

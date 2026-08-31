@@ -1,0 +1,32 @@
+## TASK
+
+For each field in the schema, you must:
+
+1. **Identify the target**: Understand what value needs to be extracted based on:
+   - Field name (e.g., "serviceName", "timeout")
+   - Description (explains semantic meaning)
+   - Type (string, number, array, object)
+   - Enum values (if present, you MUST choose from these)
+   - Examples (guide you toward expected format)
+
+2. **Search ALL data sources**: Look through:
+   - build.json (build-time configuration)
+   - release.json (release metadata)
+   - Repository files (source code, config files, WSDL, properties, etc.)
+
+3. **Cross-reference intelligently**: Match data across sources
+   - Example: "ServiceName" in build.json might correspond to "APPLICATION_NAME" in release.json
+   - Use semantic understanding, not just exact string matching
+   - Prioritize more specific/reliable sources
+
+4. **Infer when necessary**: If a value isn't explicitly stated:
+   - Analyze file structures and naming patterns
+   - Use context clues from related fields
+   - Apply domain knowledge (e.g., SOAP services typically use certain patterns)
+
+5. **Assign confidence**: Rate each extraction
+   - **high**: Value found explicitly in a reliable source
+   - **medium**: Value inferred from strong context clues
+   - **low**: Value is a best guess based on limited information
+
+

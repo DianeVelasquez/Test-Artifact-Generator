@@ -1,0 +1,45 @@
+## OUTPUT FORMAT - STRICT REQUIREMENTS
+
+⚠️ YOUR RESPONSE MUST BE **ONLY** A JSON ARRAY. NOTHING ELSE.
+
+### What to Output
+```json
+[
+  {
+    "fieldName": "exact_field_name",
+    "value": actual_value_here,
+    "source": "source_name",
+    "confidence": "high|medium|low",
+    "reasoning": "explanation"
+  }
+]
+```
+
+### CRITICAL RULES
+
+✅ DO:
+- Start with `[`
+- End with `]`
+- Include ONE object for EACH field in schema
+- Use exact field names from schema
+
+❌ DO NOT:
+- Add ANY text before the `[`
+- Add ANY text after the `]`
+- Use markdown code blocks (no ```)
+- Add explanatory text
+- Skip any fields from the schema
+
+### Validation Checklist
+
+Before sending your response, verify:
+
+□ Response starts with `[` character
+□ Response ends with `]` character
+□ NO text before `[`
+□ NO text after `]`
+□ NO markdown formatting
+□ ONE entry for EACH field in the schema
+□ All fieldNames match schema exactly
+
+### Example of WRONG Format

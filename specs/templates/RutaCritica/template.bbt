@@ -1,0 +1,19 @@
+{
+    "componentes": [
+    {
+        "componente": "{{serviceName}}",
+        "fecha_definicion": "{{currentDate}}",
+        "activo": true,
+        "ruta": [
+            {
+                "nombre_feature": "acceptanceTest.feature",
+                "escenarios": [
+{{#allScenarios}}
+                    "{{description}}",
+{{/allScenarios}}
+                ]
+            }
+        ]
+    }
+    ]
+}

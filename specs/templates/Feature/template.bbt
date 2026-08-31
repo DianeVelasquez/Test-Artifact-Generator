@@ -1,0 +1,49 @@
+Feature: {{operationName}} - Escenarios de Prueba BDD
+
+  Background:
+    * url baseUrl
+    * configure headers = { 'Content-Type': 'application/xml' }
+
+  # ==================================================
+  # ESCENARIOS MODULARES (Modular Test)
+  # ==================================================
+{{#scenariosBddModular}}
+
+  @modular @{{scenery}}
+  Scenario: {{scenery}}
+    # {{description}}
+    # Request: {{request}}
+    # Expected: {{responseStatus}} (HTTP {{responseCode}})
+    
+    Given {{given}}
+    When {{when}}
+    Then {{then}}
+    And status {{responseCode}}
+    And match response contains '{{responseStatus}}'
+{{/scenariosBddModular}}
+{{^scenariosBddModular}}
+
+  # ⚠️ No modular test scenarios found
+{{/scenariosBddModular}}
+
+  # ==================================================
+  # ESCENARIOS DE INTEGRACIÓN (Service Testing)
+  # ==================================================
+{{#scenariosBddIntegration}}
+
+  @integration @{{scenery}}
+  Scenario: {{scenery}}
+    # {{description}}
+    # Request: {{request}}
+    # Expected: {{responseStatus}} (HTTP {{responseCode}})
+    
+    Given {{given}}
+    When {{when}}
+    Then {{then}}
+    And status {{responseCode}}
+    And match response contains '{{responseStatus}}'
+{{/scenariosBddIntegration}}
+{{^scenariosBddIntegration}}
+
+  # ⚠️ No integration test scenarios found
+{{/scenariosBddIntegration}}

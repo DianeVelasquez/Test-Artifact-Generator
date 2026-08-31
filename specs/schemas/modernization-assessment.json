@@ -1,0 +1,97 @@
+{
+  "sourceHints": {
+    "description": "Microservice modernization assessment: service identity, technology signals, integration surface, dependencies, risks, and recommended modernization path.",
+    "fileExtensions": [".json", ".xml", ".yaml", ".yml", ".properties", ".gradle", ".java", ".kt", ".js", ".ts", ".cs", ".go", ".py", ".md"],
+    "directories": [
+      "src",
+      "app",
+      "config",
+      "resources",
+      "deploy",
+      "deployment",
+      "k8s",
+      "helm",
+      "docker",
+      ".github",
+      "pipelines"
+    ],
+    "patterns": [
+      "pom.xml",
+      "build.gradle*",
+      "package.json",
+      "Dockerfile",
+      "docker-compose*.yml",
+      "application*.properties",
+      "application*.yml",
+      "*.yaml",
+      "*.wsdl",
+      "openapi*.json",
+      "openapi*.yaml",
+      "swagger*.json",
+      "README.md"
+    ],
+    "priority": ["repo", "build", "release"]
+  },
+  "data": {
+    "serviceName": {
+      "type": "string",
+      "description": "Best inferred service or application name from repository metadata, build files, deployment descriptors, or README.",
+      "required": true,
+      "default": "unknown-service"
+    },
+    "businessCapability": {
+      "type": "string",
+      "description": "Business capability or domain responsibility inferred from naming, APIs, package structure, README, or configuration.",
+      "required": false,
+      "default": "Not enough evidence"
+    },
+    "currentArchitecture": {
+      "type": "string",
+      "description": "Short summary of the current architecture style, framework, and runtime model.",
+      "required": false,
+      "default": "Unknown"
+    },
+    "technologyStack": {
+      "type": "array",
+      "description": "Detected languages, frameworks, runtimes, build tools, and relevant platform components.",
+      "required": false,
+      "default": []
+    },
+    "integrationPoints": {
+      "type": "array",
+      "description": "Detected inbound and outbound integrations such as REST, SOAP, queues, databases, external services, files, or scheduled jobs.",
+      "required": false,
+      "default": []
+    },
+    "deploymentSignals": {
+      "type": "array",
+      "description": "Deployment and runtime signals such as Docker, Kubernetes, Helm, cloud provider, CI/CD, environment variables, or platform-specific configuration.",
+      "required": false,
+      "default": []
+    },
+    "modernizationDrivers": {
+      "type": "array",
+      "description": "Reasons this service may need modernization, backed by evidence from code or configuration.",
+      "required": false,
+      "default": []
+    },
+    "risks": {
+      "type": "array",
+      "description": "Technical risks, migration risks, hidden coupling, missing documentation, obsolete dependencies, operational fragility, or test gaps.",
+      "required": false,
+      "default": []
+    },
+    "recommendedPath": {
+      "type": "string",
+      "description": "Recommended modernization path: rehost, replatform, refactor, rewrite, strangler, API facade, containerization, test characterization, or other path. Include the reasoning.",
+      "required": true,
+      "default": "Run deeper discovery before selecting a modernization path."
+    },
+    "nextActions": {
+      "type": "array",
+      "description": "Practical next actions for an engineering team to continue modernization discovery or implementation.",
+      "required": false,
+      "default": []
+    }
+  }
+}

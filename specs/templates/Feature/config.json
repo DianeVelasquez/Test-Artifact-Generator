@@ -1,0 +1,20 @@
+{
+  "name": "Feature File Generator",
+  "description": "Genera archivos .feature para escenarios BDD",
+  "outputFileName": "{operationName}-scenarios.feature",
+  "enabled": true,
+  "mapping": {
+    "operationName": {
+      "path": "operationName",
+      "default": "##OperationNameNotFound##"
+    },
+    "scenariosBddModular": {
+      "path": "scenariosBddModular",
+      "default": []
+    },
+    "scenariosBddIntegration": {
+      "path": "scenariosBddIntegration",
+      "default": []
+    }
+  }
+}

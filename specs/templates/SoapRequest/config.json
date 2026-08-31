@@ -1,0 +1,28 @@
+{
+  "name": "SOAP Request Generator",
+  "description": "Genera archivos de request SOAP XML para pruebas de servicios",
+  "outputFileName": "soap-request-{serviceName}.xml",
+  "enabled": true,
+  "mapping": {
+    "serviceName": {
+      "path": "serviceName",
+      "required": true
+    },
+    "systemId": {
+      "path": "systemId",
+      "default": "DEVELOPSOATEST"
+    },
+    "userName": {
+      "path": "userName",
+      "default": "DEVELOPSOATEST"
+    },
+    "operationName": {
+      "path": "operations.operations[0]",
+      "default": "operationNameTest"
+    },
+    "messagingType": {
+      "path": "messagingType",
+      "default": "XML-IAST"
+    }
+  }
+}

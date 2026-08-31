@@ -1,0 +1,19 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+    xmlns:v2="http://grupobancolombia.com/ents/SOI/MessageFormat/V2.1"
+    xmlns:v1="http://grupobancolombia.com/intf/Canal/Comun/{{serviceName}}/V1.0">
+    <soapenv:Header>
+        <v2:requestHeader>
+            <systemId>{{systemId}}</systemId>
+            <messageId>{{messagingType}}</messageId>
+            <timestamp>{{timestamp}}</timestamp>
+            <userId>
+                <userName>{{userName}}</userName>
+            </userId>
+        </v2:requestHeader>
+    </soapenv:Header>
+    <soapenv:Body>
+        <v1:{{operationName}}>
+            <mensaje>Template generado exitosamente para {{serviceName}}</mensaje>
+        </v1:{{operationName}}>
+    </soapenv:Body>
+</soapenv:Envelope>

@@ -1,0 +1,141 @@
+{
+  "sourceHints": {
+    "description": "Metadata de servicios Spring Boot REST, SOAP/ACE o APIs genéricas - configuración, operaciones y endpoints",
+    "fileExtensions": [".properties", ".xml", ".yaml", ".yml", ".java", ".json", ".feature", ".wsdl", ".gradle", ".kts"],
+    "directories": [
+      "config",
+      "src/test/resources/messages",
+      "src/main/java",
+      "src/main/resources",
+      "src/test/java",
+      "properties",
+      "resources"
+    ],
+    "patterns": [
+      "application*.properties",
+      "application*.yml",
+      "service*.xml",
+      "*Service.java",
+      "pom.xml",
+      "build.gradle",
+      "build.gradle.kts",
+      "*Controller.java",
+      "*Resource.java",
+      "*.feature",
+      "*.wsdl"
+    ],
+    "priority": ["repo", "build", "release"]
+  },
+  "data": {
+    "serviceName": {
+      "type": "string",
+      "description": "Nombre del servicio",
+      "required": true,
+      "validation": {
+        "minLength": 3,
+        "maxLength": 100,
+        "pattern": "^[a-zA-Z0-9_-]+$"
+      },
+      "examples": [
+        "PaymentService",
+        "AuthenticationService",
+        "UserManagementService"
+      ]
+    },
+    "technologyProfile": {
+      "type": "string",
+      "description": "Perfil tecnológico detectado para interpretar correctamente los artefactos QA generados.",
+      "required": true,
+      "enum": [
+        "spring-boot-rest",
+        "soap-ace-legacy",
+        "generic-api"
+      ],
+      "examples": [
+        "spring-boot-rest"
+      ]
+    },
+    "messagingType": {
+      "type": "string",
+      "description": "Tipo de mensajería de consumo del servicio y del sistema proveedor - transformaciones de mensajería",
+      "required": true,
+      "enum": [
+        "XML-IAST",
+        "IAST-XML",
+        "XML-XML",
+        "REST-JSON"
+      ],
+      "enumDescriptions": {
+        "XML-IAST": "Transformación de formato XML a IAST",
+        "IAST-XML": "Transformación de formato IAST a XML",
+        "XML-XML": "Sin transformación, formato XML puro",
+        "REST-JSON": "Servicio REST con payloads JSON"
+      },
+      "examples": [
+        "XML-IAST",
+        "REST-JSON"
+      ]
+    },
+    "consumerInterface": {
+      "type": "array",
+      "description": "Forma de consumo del servicio o tipo de exposición del servicio, puede ser por cola MQ o por URL o por ambos",
+      "required": true,
+      "enum": [
+        "MQ_Cola",
+        "URL_Channel"
+      ],
+      "enumDescriptions": {
+        "MQ_Cola": "Consumo mediante cola IBM MQ",
+        "URL_Channel": "Consumo mediante URL/canal HTTP"
+      },
+      "validation": {
+        "minItems": 1,
+        "maxItems": 2,
+        "itemType": "string"
+      },
+      "examples": [
+        ["MQ_Cola"],
+        ["URL_Channel"],
+        ["MQ_Cola", "URL_Channel"]
+      ]
+    },
+    "operations": {
+      "type": "array",
+      "description": "Nombre de todas las operaciones del servicio. IMPORTANTE: Extrae SOLO las operaciones que encuentres en los datos reales. NO uses los ejemplos del schema. Para Spring Boot, identifica operaciones desde métodos de controladores anotados con @GetMapping, @PostMapping, @PutMapping, @DeleteMapping, @PatchMapping o @RequestMapping. Para SOAP/ACE, usa carpetas de mensajes, archivos .feature y elementos <wsdl:operation>.",
+      "required": true
+    },
+    "timeout": {
+      "type": "number",
+      "description": "Tiempo de espera de respuesta en milisegundos",
+      "required": true,
+      "validation": {
+        "min": 1000,
+        "max": 300000
+      }
+    },
+    "hasSpr": {
+      "type": "boolean",
+      "description": "El SPR es el sistema parametrizador de respuestas, con este bool representamos si el servicio usa o no el componente",
+      "required": true
+    },
+    "hasPeq": {
+      "type": "boolean",
+      "description": "El PEQ es el parametrizador de equivalencias, con este bool representamos si el servicio usa o no el componente",
+      "required": true
+    },
+    "urlExposicionACE": {
+      "type": "string",
+      "description": "URL del servicio en ACE (App Connect Enterprise), lo puedes encontrar en el pipeline de build o release, y aveces no es un DNS si no la IP directamente",
+      "required": true,
+      "validation": {
+        "pattern": "^https?://[a-zA-Z0-9.-]+(:[0-9]+)?(/.*)?$"
+
+      },
+      "examples": [
+        "https://ace.bancolombia.com/services/payment",
+        "http://ace-server:7800/ServiceName",
+        "https://acespr-api-transversales-a-canales-integracion.apps.ocpdes.ambientesbc.lab"
+      ]
+    }
+  }
+}

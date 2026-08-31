@@ -1,0 +1,55 @@
+{
+  "$schema": "./prompt-config.schema.json",
+  "version": "1.0.0",
+  "description": "Configuration for LLM prompts used throughout the system",
+  "prompts": {
+    "fieldExtraction": {
+      "description": "Prompt for extracting field values from multiple data sources",
+      "temperature": 0.25,
+      "maxTokens": 9096,
+      "sections": [
+        {
+          "name": "system-role",
+          "file": "fragments/field-extraction/system-role.txt",
+          "required": true
+        },
+        {
+          "name": "schema-context",
+          "template": "## OUTPUT SCHEMA\n\nThe following schema defines the fields you need to extract. Each field specifies:\n- **type**: The data type expected (string, number, boolean, array, object)\n- **description**: What this field represents\n- **required**: Whether this field must have a value\n- **enum**: Allowed values (if applicable) - MUST use exact enum value\n- **examples**: Sample values to guide extraction\n\n```json\n{{schema}}\n```\n\n",
+          "required": true
+        },
+        {
+          "name": "sources-context",
+          "template": "## DATA SOURCES\n\nYou have access to the following data sources to extract values from:\n\n{{sources}}\n\n",
+          "required": true
+        },
+        {
+          "name": "task-instructions",
+          "file": "fragments/field-extraction/task-instructions.txt",
+          "template": "{{originalPrompt}}\n\n{{#if operationName}}## CONTEXTO DE OPERACIÓN ÚNICA\nEstás extrayendo datos para UNA SOLA operación llamada: **{{operationName}}**. TODA la información que extraigas debe pertenecer únicamente a esta operación. Ignora los datos de otras operaciones que puedas encontrar.{{/if}}",
+          "required": true
+        },
+        {
+          "name": "important-rules",
+          "file": "fragments/field-extraction/important-rules.txt",
+          "required": true
+        },
+        {
+          "name": "nested-handling",
+          "file": "fragments/field-extraction/nested-handling.txt",
+          "required": true
+        },
+        {
+          "name": "output-format",
+          "file": "fragments/field-extraction/output-format.txt",
+          "required": true
+        },
+        {
+          "name": "examples",
+          "file": "fragments/field-extraction/examples.txt",
+          "required": true
+        }
+      ]
+    }
+  }
+}

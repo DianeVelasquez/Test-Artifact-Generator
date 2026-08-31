@@ -1,0 +1,134 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "version": "2.0.0",
+  "description": "Configuration for Test-Artifact-Generator QA automation flows",
+  "orchestrationSteps": [
+    {
+      "name": "serviceDiscovery",
+      "description": "Discover service metadata, technology profile, operations, and Karate configuration",
+      "flows": ["serviceMetadata"],
+      "executionMode": "sequential",
+      "retryPolicy": {
+        "enabled": true,
+        "maxAttempts": 2,
+        "backoffMs": 1000
+      },
+      "validation": {
+        "fileExistence": true,
+        "schemaCompliance": true,
+        "contentQuality": false,
+        "crossFlowValidation": false
+      },
+      "onSuccess": {
+        "extractOperations": {
+          "sourceFile": "output/intermediate-data/service-metadata.json",
+          "field": "operations",
+          "storeAs": "discoveredOperations"
+        }
+      }
+    },
+    {
+      "name": "operationProcessing",
+      "description": "Process every discovered operation and generate BDD/Karate artifacts",
+      "flows": ["operationDiscovery", "bddScenarios"],
+      "executionMode": "sequential",
+      "dynamicScope": {
+        "forEach": "discoveredOperations",
+        "variable": "operationName"
+      },
+      "retryPolicy": {
+        "enabled": false,
+        "maxAttempts": 1,
+        "backoffMs": 1000
+      },
+      "validation": {
+        "fileExistence": true,
+        "schemaCompliance": true,
+        "contentQuality": false,
+        "crossFlowValidation": false
+      }
+    }
+  ],
+  "validation": {},
+  "flows": {
+    "modernizationAssessment": {
+      "description": "Analyzes a legacy microservice and generates a modernization assessment report",
+      "enabled": true,
+      "dependsOn": [],
+      "schema": "schemas/modernization-assessment.json",
+      "templates": [
+        "ModernizationAssessment"
+      ],
+      "sources": {
+        "build": "resources/build.json",
+        "release": "resources/release.json",
+        "repo": "resources/repo"
+      },
+      "output": {
+        "intermediate": "output/intermediate-data/modernization-assessment.json",
+        "artifacts": "output/artifacts/modernization-assessment/"
+      }
+    },
+    "serviceMetadata": {
+      "description": "Extrae metadata de servicios Spring Boot REST, SOAP/ACE o APIs genéricas y genera artefactos de configuración",
+      "enabled": true,
+      "dependsOn": [],
+      "schema": "schemas/service.json",
+      "templates": [
+        "KarateConfig"
+      ],
+      "sources": {
+        "build": "resources/build.json",
+        "release": "resources/release.json",
+        "repo": "resources/repo"
+      },
+      "output": {
+        "intermediate": "output/intermediate-data/service-metadata.json",
+        "artifacts": "output/artifacts/service/"
+      }
+    },
+    "operationDiscovery": {
+      "description": "Extrae detalles de UNA operación específica desde controladores Spring Boot, OpenAPI, WSDL, mensajes y .feature",
+      "enabled": true,
+      "dependsOn": ["serviceMetadata"],
+      "schema": "schemas/operation.json",
+      "templates": [],
+      "sources": {
+        "repo": "resources/repo"
+      },
+      "output": {
+        "intermediate": "output/intermediate-data/operations/{operationName}.json",
+        "artifacts": "output/artifacts/operations/{operationName}/"
+      },
+      "dynamicExecution": {
+        "enabled": true,
+        "sourceList": "service-metadata.json",
+        "sourceField": "operations",
+        "description": "Este flow se ejecuta N veces, una por cada operación encontrada en service-metadata.json"
+      }
+    },
+    "bddScenarios": {
+      "description": "Extrae escenarios BDD de UNA operación específica desde .feature y step definitions",
+      "enabled": true,
+      "dependsOn": ["operationDiscovery"],
+      "schema": "schemas/bddScenarios.json",
+      "templates": [
+        "Feature",
+        "RutaCritica"
+      ],
+      "sources": {
+        "repo": "resources/repo"
+      },
+      "output": {
+        "intermediate": "output/intermediate-data/bdds/{operationName}/bdd-scenarios.json",
+        "artifacts": "output/artifacts/bdds/{operationName}/"
+      },
+      "dynamicExecution": {
+        "enabled": true,
+        "sourceList": "service-metadata.json",
+        "sourceField": "operations",
+        "description": "Este flow se ejecuta N veces, una por cada operación encontrada en service-metadata.json"
+      }
+    }
+  }
+}

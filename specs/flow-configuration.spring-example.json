@@ -1,0 +1,99 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "version": "2.0.0",
+  "description": "Example QA automation flow for the bundled Spring Boot REST fixture",
+  "orchestrationSteps": [
+    {
+      "name": "serviceDiscovery",
+      "description": "Discover service metadata, technology profile, operations, and Karate configuration",
+      "flows": ["serviceMetadata"],
+      "executionMode": "sequential",
+      "retryPolicy": {
+        "enabled": true,
+        "maxAttempts": 2,
+        "backoffMs": 1000
+      },
+      "validation": {
+        "fileExistence": true,
+        "schemaCompliance": true,
+        "contentQuality": false,
+        "crossFlowValidation": false
+      },
+      "onSuccess": {
+        "extractOperations": {
+          "sourceFile": "output/intermediate-data/service-metadata.json",
+          "field": "operations",
+          "storeAs": "discoveredOperations"
+        }
+      }
+    },
+    {
+      "name": "operationProcessing",
+      "description": "Process every discovered operation and generate BDD/Karate artifacts",
+      "flows": ["operationDiscovery", "bddScenarios"],
+      "executionMode": "sequential",
+      "dynamicScope": {
+        "forEach": "discoveredOperations",
+        "variable": "operationName"
+      },
+      "retryPolicy": {
+        "enabled": false,
+        "maxAttempts": 1,
+        "backoffMs": 1000
+      },
+      "validation": {
+        "fileExistence": true,
+        "schemaCompliance": true,
+        "contentQuality": false,
+        "crossFlowValidation": false
+      }
+    }
+  ],
+  "validation": {},
+  "flows": {
+    "serviceMetadata": {
+      "description": "Extracts metadata from the Spring Boot REST example and generates Karate config",
+      "enabled": true,
+      "dependsOn": [],
+      "schema": "schemas/service.json",
+      "templates": ["KarateConfig"],
+      "sources": {
+        "build": "examples/spring-boot-rest/build.json",
+        "release": "examples/spring-boot-rest/release.json",
+        "repo": "examples/spring-boot-rest/repo"
+      },
+      "output": {
+        "intermediate": "output/intermediate-data/service-metadata.json",
+        "artifacts": "output/artifacts/service/"
+      }
+    },
+    "operationDiscovery": {
+      "description": "Extracts deterministic REST operation details from Spring Boot controllers",
+      "enabled": true,
+      "dependsOn": ["serviceMetadata"],
+      "schema": "schemas/operation.json",
+      "templates": [],
+      "sources": {
+        "repo": "examples/spring-boot-rest/repo"
+      },
+      "output": {
+        "intermediate": "output/intermediate-data/operations/{operationName}.json",
+        "artifacts": "output/artifacts/operations/{operationName}/"
+      }
+    },
+    "bddScenarios": {
+      "description": "Generates REST BDD scenarios for each discovered Spring Boot operation",
+      "enabled": true,
+      "dependsOn": ["operationDiscovery"],
+      "schema": "schemas/bddScenarios.json",
+      "templates": ["Feature", "RutaCritica"],
+      "sources": {
+        "repo": "examples/spring-boot-rest/repo"
+      },
+      "output": {
+        "intermediate": "output/intermediate-data/bdds/{operationName}/bdd-scenarios.json",
+        "artifacts": "output/artifacts/bdds/{operationName}/"
+      }
+    }
+  }
+}

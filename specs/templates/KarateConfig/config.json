@@ -1,0 +1,28 @@
+{
+  "name": "Karate Config Generator",
+  "description": "Genera archivos de configuración para pruebas Karate",
+  "outputFileName": "karate-config-{serviceName}.js",
+  "enabled": true,
+  "mapping": {
+    "serviceName": {
+      "path": "serviceName",
+      "required": true
+    },
+    "urlExposicionACE": {
+      "path": "urlExposicionACE",
+      "default": "http://localhost:8080"
+    },
+    "technologyProfile": {
+      "path": "technologyProfile",
+      "default": "generic-api"
+    },
+    "timeout": {
+      "path": "timeout",
+      "default": 30000
+    },
+    "operations": {
+      "path": "operations.operations",
+      "default": []
+    }
+  }
+}

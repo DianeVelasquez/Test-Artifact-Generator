@@ -1,0 +1,119 @@
+## CRITICAL RULES - VIOLATION WILL FAIL THE TASK
+
+### ⚠️ RULE 1: EXTRACT VALUES, NOT SCHEMA METADATA
+
+❌ NEVER return schema properties as values:
+- DO NOT return: "type", "description", "required", "validation", "examples"
+- THESE ARE METADATA - They tell you WHAT to extract, NOT the value itself
+
+✅ ALWAYS return the ACTUAL DATA found in sources:
+- "serviceName" → "PaymentService" (NOT {"type": "string"})
+- "timeout" → 30000 (NOT {"type": "number"})
+
+**THINK:** "Would this value make sense in production code?"
+- {"type": "string"} → NO! This is metadata
+- "PaymentService" → YES! This is actual data
+
+---
+
+### ⚠️ RULE 2: ENUM FIELDS - EXACT VALUES ONLY
+
+🚨 IF A FIELD HAS "enum", THIS IS THE MOST CRITICAL RULE:
+
+**Step 1**: Check if field has "enum" property
+**Step 2**: If yes, your value MUST be EXACTLY one of the enum values
+**Step 3**: COPY the enum value character-by-character
+
+Example schema:
+```json
+{
+  "consumerInterface": {
+    "type": "array",
+    "enum": ["MQ_Cola", "URL_Channel"],
+    "enumDescriptions": {
+      "MQ_Cola": "Consumo mediante cola IBM MQ",
+      "URL_Channel": "Consumo mediante URL/canal HTTP"
+    }
+  }
+}
+```
+
+**What you might find in data:**
+- "Este servicio se consume por cola MQ"
+- "interface: URL channel"
+- "Exposición mediante HTTP"
+
+**How to extract:**
+
+1. READ the data: "cola MQ"
+2. UNDERSTAND it means: MQ queue consumption
+3. LOOK at enum values: ["MQ_Cola", "URL_Channel"]
+4. MATCH to enum: "MQ_Cola" (NOT "cola MQ")
+5. RETURN the EXACT enum value: "MQ_Cola"
+
+❌ WRONG EXTRACTIONS:
+```json
+{
+  "value": "cola MQ"           // Wrong: lowercase, space, not in enum
+}
+{
+  "value": "MQ_cola"           // Wrong: wrong capitalization
+}
+{
+  "value": "Consumo mediante cola IBM MQ"  // Wrong: using description
+}
+```
+
+✅ CORRECT EXTRACTION:
+```json
+{
+  "fieldName": "consumerInterface",
+  "value": ["MQ_Cola"],        // Correct: exact enum value
+  "source": "repository",
+  "confidence": "high",
+  "reasoning": "Found 'cola MQ' in README.md which maps to the MQ_Cola enum value"
+}
+```
+
+**VERIFICATION CHECKLIST FOR ENUMS:**
+□ Did I check if this field has an "enum" property?
+□ Is my value EXACTLY one of the values in the "enum" array?
+□ Did I copy the enum value character-by-character (including case)?
+□ Did I avoid using values from "enumDescriptions"?
+
+---
+
+### ⚠️ RULE 3: REQUIRED FIELDS MUST HAVE VALUES
+
+If a field has "required": true, you MUST provide a value.
+
+If you cannot find the value:
+- Use "default" if provided in schema
+- Infer from context with "low" confidence
+- Use reasonable placeholder with explanation
+
+❌ NEVER skip required fields
+❌ NEVER return null/undefined for required fields
+
+---
+
+### ⚠️ RULE 4: RESPECT DATA TYPES
+
+- "type": "string" → Return string: "value"
+- "type": "number" → Return number: 30000 (NOT "30000")
+- "type": "boolean" → Return boolean: true (NOT "true")
+- "type": "array" → Return array: ["item1", "item2"]
+- "type": "object" → Return object: {"key": "value"}
+---
+
+### ⚠️ RULE 5: NO INVENTED VALUES
+
+Only return values that:
+- Exist explicitly in sources
+- Can be strongly inferred from context
+- Come from schema "default"
+
+❌ DO NOT invent values that have no basis in the data
+
+---
+**REMEMBER:** These rules are NOT suggestions. Violating them means the extraction FAILED.

@@ -1,0 +1,49 @@
+{
+  "name": "test-artifact-generator",
+  "version": "1.0.0",
+  "description": "Technology-aware QA automation assistant that generates BDD and Karate test artifacts from existing services",
+  "type": "module",
+  "main": "./dist/index.js",
+  "scripts": {
+    "build": "rimraf dist && tsc",
+    "dev": "tsx watch src/index.ts",
+    "start": "tsx dist/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Miguel Angel Gutierrez Naranjo",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "@ibm-cloud/watsonx-ai": "^1.7.4",
+    "ajv": "^8.17.1",
+    "beeai-framework": "0.1.20",
+    "dotenv": "^17.2.3",
+    "picocolors": "^1.1.1",
+    "remeda": "^2.32.0",
+    "strip-ansi": "^7.1.2",
+    "zod": "^3.25.76"
+  },
+  "overrides": {
+    "@qdrant/js-client-rest": "1.13.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.10.0",
+    "@types/ajv": "^0.0.5",
+    "@types/eslint__js": "^8.42.3",
+    "@types/eslint-config-prettier": "^6.11.3",
+    "@types/node": "^18.15.3",
+    "eslint": "^9.10.0",
+    "eslint-config-prettier": "^9.1.0",
+    "husky": "^9.1.6",
+    "lint-staged": "^15.2.10",
+    "pino-pretty": "^11.2.2",
+    "prettier": "^3.3.3",
+    "rimraf": "^5.0.10",
+    "tsx": "^4.19.1",
+    "typescript": "~5.5.4",
+    "typescript-eslint": "^8.6.0"
+  },
+  "lint-staged": {
+    "*.{ts,js}": "eslint --fix",
+    "*": "prettier --ignore-unknown --write"
+  }
+}
